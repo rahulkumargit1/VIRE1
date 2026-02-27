@@ -1,11 +1,7 @@
 package com.example.payoffline
 
 import android.Manifest
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,28 +20,28 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.payoffline.ui.screens.*
 import com.example.payoffline.ui.theme.PayOfflineTheme
 import com.example.payoffline.viewmodel.UssdViewModel
 
 sealed class NavTab(val route: String, val label: String, val icon: ImageVector, val iconSelected: ImageVector) {
-    object Pay     : NavTab("pay",     "Pay",      Icons.Outlined.Send,           Icons.Filled.Send)
-    object Balance : NavTab("balance", "Balance",  Icons.Outlined.AccountBalance, Icons.Filled.AccountBalance)
-    object History : NavTab("history", "History",  Icons.Outlined.ReceiptLong,    Icons.Filled.ReceiptLong)
-    object Settings: NavTab("settings","Settings", Icons.Outlined.Settings,       Icons.Filled.Settings)
+    object Pay      : NavTab("pay",      "Pay",      Icons.Outlined.Send,           Icons.Filled.Send)
+    object Balance  : NavTab("balance",  "Balance",  Icons.Outlined.AccountBalance, Icons.Filled.AccountBalance)
+    object History  : NavTab("history",  "History",  Icons.Outlined.ReceiptLong,    Icons.Filled.ReceiptLong)
+    object Settings : NavTab("settings", "Settings", Icons.Outlined.Settings,       Icons.Filled.Settings)
 }
 
 val allTabs = listOf(NavTab.Pay, NavTab.Balance, NavTab.History, NavTab.Settings)
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val vm: UssdViewModel = viewModel()
             val settings by vm.settings.collectAsState()
-
             PayOfflineTheme(darkTheme = settings.darkMode) {
                 AppContent(vm = vm)
             }
@@ -59,11 +55,10 @@ fun AppContent(vm: UssdViewModel) {
     val context  = LocalContext.current
     val settings by vm.settings.collectAsState()
 
-    var currentTab       by remember { mutableStateOf<NavTab>(NavTab.Pay) }
+    var currentTab        by remember { mutableStateOf<NavTab>(NavTab.Pay) }
     var hasCallPermission by remember { mutableStateOf(false) }
-    var isAuthenticated  by remember { mutableStateOf(!settings.biometricEnabled) }
+    var isAuthenticated   by remember { mutableStateOf(!settings.biometricEnabled) }
 
-    // Check initial permission state
     LaunchedEffect(Unit) {
         hasCallPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.CALL_PHONE
@@ -71,12 +66,10 @@ fun AppContent(vm: UssdViewModel) {
         vm.loadSims()
     }
 
-    // Re-check auth when biometric setting changes
     LaunchedEffect(settings.biometricEnabled) {
         if (!settings.biometricEnabled) isAuthenticated = true
     }
 
-    // Permission launcher
     val permLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results ->
@@ -87,7 +80,6 @@ fun AppContent(vm: UssdViewModel) {
         }
     }
 
-    // Request permissions on start
     LaunchedEffect(Unit) {
         permLauncher.launch(arrayOf(
             Manifest.permission.CALL_PHONE,
@@ -96,33 +88,33 @@ fun AppContent(vm: UssdViewModel) {
         ))
     }
 
-    // Biometric auth
     if (!isAuthenticated && settings.biometricEnabled) {
         LaunchedEffect(Unit) {
-            val activity = context as? ComponentActivity ?: return@LaunchedEffect
+            val activity = context as? FragmentActivity ?: return@LaunchedEffect
             val bioManager = BiometricManager.from(context)
-            if (bioManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_SUCCESS) {
+            if (bioManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) ==
+                BiometricManager.BIOMETRIC_SUCCESS) {
                 val executor = ContextCompat.getMainExecutor(context)
-                val prompt = BiometricPrompt(activity, executor, object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        isAuthenticated = true
-                    }
-                })
-                val info = BiometricPrompt.PromptInfo.Builder()
-                    .setTitle("PayOffline")
-                    .setSubtitle("Authenticate to continue")
-                    .setNegativeButtonText("Cancel")
-                    .build()
-                prompt.authenticate(info)
+                val prompt = BiometricPrompt(activity, executor,
+                    object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            isAuthenticated = true
+                        }
+                    })
+                prompt.authenticate(
+                    BiometricPrompt.PromptInfo.Builder()
+                        .setTitle("PayOffline")
+                        .setSubtitle("Authenticate to continue")
+                        .setNegativeButtonText("Cancel")
+                        .build()
+                )
             } else {
-                // Biometric not available, skip auth
                 isAuthenticated = true
             }
         }
     }
 
     if (!isAuthenticated) {
-        // Splash/lock screen while authenticating
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box(contentAlignment = androidx.compose.ui.Alignment.Center) {
                 Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
@@ -147,13 +139,13 @@ fun AppContent(vm: UssdViewModel) {
                     NavigationBarItem(
                         selected = currentTab == tab,
                         onClick  = { currentTab = tab },
-                        icon     = {
+                        icon = {
                             Icon(
                                 if (currentTab == tab) tab.iconSelected else tab.icon,
                                 contentDescription = tab.label
                             )
                         },
-                        label    = { Text(tab.label) }
+                        label = { Text(tab.label) }
                     )
                 }
             }
@@ -162,19 +154,13 @@ fun AppContent(vm: UssdViewModel) {
         Box(Modifier.padding(innerPadding)) {
             AnimatedContent(
                 targetState = currentTab,
-                transitionSpec = {
-                    fadeIn(tween(200)) togetherWith fadeOut(tween(200))
-                },
+                transitionSpec = { fadeIn(tween(200)) togetherWith fadeOut(tween(200)) },
                 label = "tab_transition"
             ) { tab ->
                 when (tab) {
-                    NavTab.Pay -> PayScreen(
-                        vm = vm,
-                        onRequestPermission = {
-                            permLauncher.launch(arrayOf(Manifest.permission.CALL_PHONE))
-                        },
-                        hasCallPermission = hasCallPermission
-                    )
+                    NavTab.Pay      -> PayScreen(vm, onRequestPermission = {
+                        permLauncher.launch(arrayOf(Manifest.permission.CALL_PHONE))
+                    }, hasCallPermission = hasCallPermission)
                     NavTab.Balance  -> BalanceScreen(vm)
                     NavTab.History  -> HistoryScreen(vm)
                     NavTab.Settings -> SettingsScreen(vm)
