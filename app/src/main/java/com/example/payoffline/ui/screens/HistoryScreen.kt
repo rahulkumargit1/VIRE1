@@ -22,6 +22,7 @@ import com.example.payoffline.ui.theme.Emerald600
 import com.example.payoffline.ui.theme.Rose500
 import com.example.payoffline.viewmodel.UssdViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(vm: UssdViewModel) {
     val transactions by vm.transactions.collectAsState()
