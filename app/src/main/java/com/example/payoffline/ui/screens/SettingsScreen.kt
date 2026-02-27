@@ -167,17 +167,17 @@ fun SettingsScreen(vm: UssdViewModel) {
                         modifier = Modifier.fillMaxWidth())
                     Text("Version 2.0.0", style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    HorizontalDivider()
+                    Divider()
                     Text(
                         "PayOffline enables fast, secure offline UPI payments using USSD (*99#). " +
                         "No internet connection required — works even in areas with only basic 2G coverage.",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    HorizontalDivider()
+                    Divider()
                     InfoRow("Technology", "USSD *99# (NPCI Standard)")
                     InfoRow("Supported SIMs", "Dual SIM, all Indian carriers")
                     InfoRow("Min Android", "Android 8.0 (API 26)")
-                    HorizontalDivider()
+                    Divider()
                     Text(
                         "Built with ♥ in India",
                         style = MaterialTheme.typography.bodySmall,
@@ -286,6 +286,5 @@ private fun SettingsActionRow(
 
 @Composable
 private fun SettingsDivider() {
-    HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+    Divider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
 }
-
