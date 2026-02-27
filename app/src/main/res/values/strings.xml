@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PayOffline</string>
+    <string name="app_tagline">Offline payments, perfected.</string>
+
+    <!-- Navigation -->
+    <string name="nav_pay">Pay</string>
+    <string name="nav_balance">Balance</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Pay screen -->
+    <string name="pay_title">Send Money</string>
+    <string name="pay_recipient_label">Recipient (Mobile / UPI ID)</string>
+    <string name="pay_amount_label">Amount (₹)</string>
+    <string name="pay_pin_label">UPI PIN</string>
+    <string name="pay_button">Pay Now</string>
+    <string name="pay_hint_recipient">e.g. 9876543210</string>
+    <string name="pay_hint_amount">e.g. 500</string>
+    <string name="pay_hint_pin">6-digit PIN</string>
+
+    <!-- Balance screen -->
+    <string name="balance_title">Check Balance</string>
+    <string name="balance_button">Check Now</string>
+    <string name="mini_statement_button">Mini Statement</string>
+    <string name="link_bank_button">Link Bank Account</string>
+
+    <!-- Errors & Status -->
+    <string name="error_no_sim">No SIM card detected. Please insert a SIM and try again.</string>
+    <string name="error_permission">CALL_PHONE permission required. Tap to open Settings.</string>
+    <string name="error_carrier">Your carrier may not support *99# USSD. Try the Dialer method.</string>
+    <string name="error_network">Network returned failure. Check signal and try again.</string>
+    <string name="status_connecting">Connecting via *99#…</string>
+    <string name="status_sent">Request Sent</string>
+    <string name="status_failed">Request Failed</string>
+    <string name="status_success">Success</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_biometric">App Lock (Biometric)</string>
+    <string name="settings_biometric_desc">Require fingerprint/face to open app</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_haptic">Haptic Feedback</string>
+    <string name="settings_default_sim">Default SIM</string>
+    <string name="settings_clear_history">Clear Transaction History</string>
+    <string name="settings_export">Export History (CSV)</string>
+    <string name="settings_about">About PayOffline</string>
+
+    <!-- About -->
+    <string name="about_version">Version 2.0.0</string>
+    <string name="about_desc">PayOffline enables fast, offline UPI payments using USSD (*99#) — no internet required.</string>
+    <string name="about_built">Built with ♥ in India</string>
+</resources>
